@@ -81,3 +81,4 @@ This approach ensures effective processing and categorization of transactions be
 
 - Implement pagination for the `GET /transactions` endpoint.
 - Enhance bulk processing for OpenAI categorization.
+- Introduce stricter typing
