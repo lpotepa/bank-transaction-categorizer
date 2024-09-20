@@ -21,7 +21,7 @@ export const createTransaction = async (req: Request, res: Response) => {
 
     if (req.file) {
       const csvFilePath = path.join(__dirname, '../../uploads', req.file.filename);
-      categorizeQueue.add({ filePath: csvFilePath });
+      categorizeQueue.add({ filePath: csvFilePath }, { attempts: 3} );
       return res.status(202).json({ message: 'CSV file received. Processing has been queued.' });
     }
 
@@ -46,7 +46,7 @@ export const createTransaction = async (req: Request, res: Response) => {
 
     try {
       await transactionRepository.insert(newTransaction);
-      categorizeQueue.add({ transactionId, description });
+      categorizeQueue.add({ transactionId, description },  { attempts: 3 });
       return res.status(202).json(newTransaction);
     } catch (error) {
       if (error instanceof QueryFailedError && (error as any).code === ErrorCodes.UNIQUE_VIOLATION) {

@@ -32,6 +32,7 @@ services:
       REDIS_HOST: redis
     volumes:
       - .:/app
+      - /app/node_modules
       - ./data:/app/data
     command: >
       sh -c "npx typeorm-ts-node-commonjs migration:run -d ./ormconfig.ts && exec yarn start"
@@ -52,6 +53,7 @@ services:
       REDIS_HOST: redis
     volumes:
       - .:/app
+      - /app/node_modules
       - ./data:/app/data
     command: yarn run worker
 
