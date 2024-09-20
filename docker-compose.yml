@@ -32,8 +32,6 @@ services:
       DB_USER: postgres 
       DB_PASS: postgres
       REDIS_HOST: redis
-    env_file:
-      - .env
     volumes:
       - .:/app
       - ./data:/app/data
@@ -54,8 +52,6 @@ services:
       DB_USER: postgres
       DB_PASS: postgres
       REDIS_HOST: redis
-    env_file:
-      - .env
     volumes:
       - .:/app
       - ./data:/app/data
