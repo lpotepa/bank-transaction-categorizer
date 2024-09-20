@@ -6,6 +6,14 @@ To set up and run the application, simply execute:
 docker-compose up -d
 ```
 
+In order the drop/create/migrate the database in dev environment, you can use following commands:
+
+```bash
+yarn run db:drop
+yarn run db:create
+yarn run migrate
+```
+
 ## Running Tests
 
 To create a test database, run the following commands:
