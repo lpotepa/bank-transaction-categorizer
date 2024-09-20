@@ -53,7 +53,8 @@ describe('POST /transactions', () => {
         expect(categorizeQueue.add).toHaveBeenCalledWith({
             transactionId: 'TXN00001',
             description: 'Test Transaction',
-        });
+        },
+        { attempts: 3 });
     });
 
     it('should return 409 if transactionId already exists', async () => {
