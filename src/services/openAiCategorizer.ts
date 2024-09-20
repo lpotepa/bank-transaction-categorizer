@@ -17,7 +17,6 @@ export class OpenAICategorizer {
     });
 
     const categoriesSchema = z.object({
-      transaction_id: z.string(),
       category: z.enum(CATEGORIES),
     });
 
@@ -27,32 +26,54 @@ export class OpenAICategorizer {
 
   async categorizeTransactions(transactions: any[]): Promise<{ category: Category }[]> {
     const categorizedResults: { category: Category }[] = [];
-
+  
     for (const transaction of transactions) {
       const { description } = transaction;
       const query = `Categorize this transaction description: "${description}"`;
-
+  
       try {
-        const result = await this.structuredLlm.invoke(query);
-        const categoryName = result.category;
-
+        const categoryName = await this.invokeWithRetry(query);
+  
         let category = await this.categoryRepository.findOneBy({ name: categoryName });
-
+  
         if (!category) {
           category = this.categoryRepository.create({ name: categoryName });
           await this.categoryRepository.save(category);
         }
-
-        categorizedResults.push({
-          category,
-        });
+  
+        categorizedResults.push({ category });
       } catch (error) {
-        console.error(`Error categorizing transaction with description ${description}:`, error);
+        console.error(`Failed to categorize transaction with description ${description}:`, error);
+
+        continue;
       }
     }
-
+  
     return categorizedResults;
   }
+  
+  private async invokeWithRetry(query: string, maxRetries = 3, delayMs = 1000): Promise<string> {
+    let retries = 0;
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  
+    while (retries < maxRetries) {
+      try {
+        const result = await this.structuredLlm.invoke(query);
+        return result.category;
+      } catch (error) {
+        retries++;
+        console.error(`Error invoking query, attempt ${retries}:`, error);
+  
+        if (retries < maxRetries) {
+          await delay(delayMs * retries);
+        } else {
+          throw new Error(`Failed to invoke query after ${maxRetries} attempts.`);
+        }
+      }
+    }
+  
+    throw new Error('Unexpected flow in invokeWithRetry');
+  }  
 }
 
 export const createOpenAICategorizer = (openAIApiKey: string) => {
