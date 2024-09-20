@@ -73,7 +73,7 @@ This approach ensures effective processing and categorization of transactions be
 
 ![Architecture Diagram](architecture_diagram.png)
 
-## Sequence Diagram
+## Data flow Diagram
 
 ![Sequence Diagram](sequence_diagram.png)
 
